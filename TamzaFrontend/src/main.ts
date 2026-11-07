@@ -6,8 +6,6 @@ MemoService.test().then((r) => {
    r ? console.log("Connected to backend") : console.error("Could not connect to backend");
 })
 
-console.log(import.meta.env.VITE_TAMZA_BACKEND_URL);
-
 // Dom Elements
 const stopStartButton = document.querySelector("#stopstart-button") as HTMLButtonElement;
 const uploadButton = document.querySelector("#upload-button") as HTMLButtonElement;

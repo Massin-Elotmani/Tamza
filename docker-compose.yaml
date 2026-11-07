@@ -1,11 +1,14 @@
-version: '3'
 services:
   backend:
     build:
       context: ./TamzaBackend
       dockerfile: Dockerfile.backend
-    ports:
-      - "8080:8080"
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+    expose:
+      - "8080"
+    restart: unless-stopped
+
   frontend:
     depends_on:
       - backend
@@ -14,3 +17,4 @@ services:
       dockerfile: Dockerfile.frontend
     ports:
       - "80:80"
+    restart: unless-stopped
