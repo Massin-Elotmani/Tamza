@@ -1,35 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="">
   <head>
-    <link rel="icon" type="image/x-icon" href="/ⵒ.ico">
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script type="module" src="/src/main.ts"></script>
-    <title>Tamza</title>
+    <meta charset="UTF-8">
+    <link rel="icon" href="/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vite App</title>
   </head>
   <body>
-    <div id="app">
-      <div id="recorder-container" class="card">
-        <button id="stopstart-button">If you seeing this i fricked up severly</button>
-        <button id="upload-button">Save & Share</button>
-      </div>
-
-      <div id="player-container" class="card">
-        <audio id="audio-player" controls></audio>
-      </div>
-
-      <div id="link-container">
-        <p>Link: <a id="created-audio-link"></a></p>
-        <button id="save-button">Download</button>
-        <button id="clipboard-button">Copy Link</button>
-        <button id="open-qrcode-modal">Create QR</button>
-      </div>
-
-      <dialog id="qrcode-modal">
-        <img id="qrcode" src="" alt="QR Code" />
-        <button id="close-qrcode-modal">Close</button>
-      </dialog>
-    </div>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

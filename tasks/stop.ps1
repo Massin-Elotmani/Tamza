@@ -1,28 +1,26 @@
-# Stops both Tamza services, preserving containers and their recorded audio.
+# Stops tracked local apps and the local database; preserves database data.
 [CmdletBinding()]
 param()
 
 $ErrorActionPreference = 'Stop'
-$composeFile = Join-Path $PSScriptRoot '../docker-compose.yaml'
-
+$stateFile = Join-Path $PSScriptRoot '.local/processes.json'
+$composeFile = Join-Path $PSScriptRoot '../docker-compose.local.yaml'
 try {
-    if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
-        throw 'Docker is not installed or is missing from PATH. Install Docker Desktop, then reopen PowerShell.'
+    if (Test-Path -LiteralPath $stateFile) {
+        # Assign first so Windows PowerShell 5.1 enumerates JSON arrays per process.
+        $entries = Get-Content -LiteralPath $stateFile -Raw | ConvertFrom-Json
+        foreach ($entry in $entries) {
+            $process = Get-Process -Id $entry.Id -ErrorAction SilentlyContinue
+            if ($process -and $process.StartTime.ToUniversalTime().ToString('o') -eq $entry.Started) {
+                & taskkill /PID $entry.Id /T /F
+                if ($LASTEXITCODE -ne 0 -and (Get-Process -Id $entry.Id -ErrorAction SilentlyContinue)) { throw "Could not stop process $($entry.Id)." }
+            }
+        }
+        Remove-Item -LiteralPath $stateFile
     }
-    if (-not (Test-Path -LiteralPath $composeFile)) {
-        throw "Compose configuration not found: $composeFile"
-    }
-    & docker info *> $null
-    if ($LASTEXITCODE -ne 0) {
-        throw 'Docker is not reachable. Open Docker Desktop and retry so the Tamza containers can be stopped.'
-    }
-    & docker compose version
-    if ($LASTEXITCODE -ne 0) { throw 'Docker Compose v2 is required. Update Docker Desktop.' }
-
-    Write-Host 'Stopping the frontend and backend...'
-    & docker compose --project-name tamza --file $composeFile stop --timeout 30
-    if ($LASTEXITCODE -ne 0) { throw 'Could not stop Tamza. Check Docker output above.' }
-    Write-Host 'Both Tamza services are stopped. Docker Desktop is left running.'
+    & docker compose -p tamza-local -f $composeFile stop --timeout 30 db
+    if ($LASTEXITCODE -ne 0) { throw 'Could not stop the database. Check Docker Desktop and retry.' }
+    Write-Host 'Local apps and database stopped. Database data is preserved.'
 } catch {
     Write-Error $_ -ErrorAction Continue
     exit 1
